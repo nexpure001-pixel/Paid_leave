@@ -2,6 +2,9 @@ import { Card } from "@/components/ui/Card";
 import { getDashboardStats } from "./dashboardStats";
 import { AlertCircle, Calendar, CheckCircle } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function AdminDashboardPage() {
     const { upcomingGrants, expiringGrants, employeeStats } = await getDashboardStats();
 
