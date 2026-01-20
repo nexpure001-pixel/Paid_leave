@@ -3,7 +3,7 @@ import { getDashboardStats } from "./dashboardStats";
 import { AlertCircle, Calendar, CheckCircle } from "lucide-react";
 
 export default async function AdminDashboardPage() {
-    const { upcomingGrants, expiringGrants } = await getDashboardStats();
+    const { upcomingGrants, expiringGrants, employeeStats } = await getDashboardStats();
 
     return (
         <div className="space-y-6">
@@ -64,6 +64,63 @@ export default async function AdminDashboardPage() {
                     )}
                 </Card>
             </div>
+
+            {/* Employee Stats Table */}
+            <Card title="全社員 有給消化状況 (現在有効分)">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead>
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">氏名</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">保有総数</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">消化済</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">残日数</th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">消化率</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {employeeStats.map((stat) => (
+                                <tr key={stat.id}>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                                        {stat.name}
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                                        {stat.totalGranted}日
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                                        {stat.totalUsed}日
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-600">
+                                        {stat.totalRemaining}日
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                                        <div className="flex items-center justify-end">
+                                            <span className={`mr-2 font-medium ${parseFloat(stat.usageRate) >= 50 ? 'text-green-600' : 'text-orange-500'
+                                                }`}>
+                                                {stat.usageRate}%
+                                            </span>
+                                            <div className="w-16 bg-gray-200 rounded-full h-1.5">
+                                                <div
+                                                    className={`h-1.5 rounded-full ${parseFloat(stat.usageRate) >= 50 ? 'bg-green-500' : 'bg-orange-400'
+                                                        }`}
+                                                    style={{ width: `${Math.min(parseFloat(stat.usageRate), 100)}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                            {employeeStats.length === 0 && (
+                                <tr>
+                                    <td colSpan={5} className="px-6 py-4 text-center text-sm text-gray-500">
+                                        データがありません
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
+            </Card>
 
             {/* Quick Links / Status (Optional) */}
             <div className="grid grid-cols-1 gap-6">

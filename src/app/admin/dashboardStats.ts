@@ -88,8 +88,51 @@ export async function getDashboardStats() {
         remaining: g.days_granted - g.days_used
     })) || [];
 
+    // --- Logic: All Employee Stats ---
+    // We need to aggregate grants per user
+    const employeeStats = users?.map(user => {
+        const userGrants = grants?.filter(g => g.user_id === user.id) || [];
+
+        let totalGranted = 0;
+        let totalUsed = 0;
+        let totalRemaining = 0;
+
+        userGrants.forEach(g => {
+            // For "Total Held", we usually mean *Valid* grants.
+            // If expired, it's not "held".
+            const expiry = parseISO(g.expiry_date);
+            const isExpired = isBefore(expiry, today);
+
+            // Count consumption regardless of expiry? Usually we care about "Current Status".
+            // Let's show:
+            // 1. Currently Valid Total (available)
+            // 2. Used (Lifetime? Or Current Period? Request says "Consumpiton Rate").
+            // Usually Consumption Rate = (Used / Granted) * 100
+            // But if granted 2 years ago and used, it's 100%.
+            // Let's stick to "Valid Grants" for the rate to be meaningful for *current* management.
+
+            if (!isExpired) {
+                totalGranted += g.days_granted;
+                totalUsed += g.days_used;
+                totalRemaining += (g.days_granted - g.days_used);
+            }
+        });
+
+        const usageRate = totalGranted > 0 ? ((totalUsed / totalGranted) * 100).toFixed(1) : "0.0";
+
+        return {
+            id: user.id,
+            name: user.full_name,
+            totalGranted, // Currently valid
+            totalUsed,    // Used from currently valid
+            totalRemaining,
+            usageRate
+        };
+    }) || [];
+
     return {
         upcomingGrants,
-        expiringGrants
+        expiringGrants,
+        employeeStats
     };
 }
