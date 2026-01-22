@@ -34,9 +34,9 @@ export function getValidPastGrants(joinedAt: Date, checkDate: Date = new Date())
     // 1. 定義リストをチェック
     for (const ent of LEAVE_ENTITLEMENTS) {
         const grantDate = addMonths(start, ent.months);
-        const expiryDate = addYears(grantDate, 2);
+        const expiryDate = addYears(grantDate, 100); // 実質無期限 (100年後)
 
-        // 「付与日が過去(今日含む)」であれば、すでに期限切れでも履歴として返す
+        // 「付与日が過去(今日含む)」であれば履歴として返す
         if (isBefore(grantDate, target) || isSameDay(grantDate, target)) {
             results.push({
                 days: ent.days,
@@ -54,7 +54,7 @@ export function getValidPastGrants(joinedAt: Date, checkDate: Date = new Date())
 
     while (currentMonths < MAX_MONTHS) {
         const grantDate = addMonths(start, currentMonths);
-        const expiryDate = addYears(grantDate, 2);
+        const expiryDate = addYears(grantDate, 100); // 実質無期限
 
         // まだ付与日が来ていなければループ終了 (これ以降も全て未来なので)
         if (isAfter(grantDate, target)) {
