@@ -36,10 +36,8 @@ export function getValidPastGrants(joinedAt: Date, checkDate: Date = new Date())
         const grantDate = addMonths(start, ent.months);
         const expiryDate = addYears(grantDate, 2);
 
-        // 「付与日が過去(今日含む)」かつ「まだ有効期限内(今日含む)」
-        if ((isBefore(grantDate, target) || isSameDay(grantDate, target)) &&
-            (isAfter(expiryDate, target) || isSameDay(expiryDate, target))) {
-
+        // 「付与日が過去(今日含む)」であれば、すでに期限切れでも履歴として返す
+        if (isBefore(grantDate, target) || isSameDay(grantDate, target)) {
             results.push({
                 days: ent.days,
                 grantDate,
@@ -63,15 +61,14 @@ export function getValidPastGrants(joinedAt: Date, checkDate: Date = new Date())
             break;
         }
 
-        // 有効期限内なら追加
-        if (isAfter(expiryDate, target) || isSameDay(expiryDate, target)) {
-            results.push({
-                days: 20,
-                grantDate,
-                expiryDate,
-                yearsOfService: currentMonths / 12
-            });
-        }
+        // 期限切れかどうかにかかわらず追加
+        results.push({
+            days: 20,
+            grantDate,
+            expiryDate,
+            yearsOfService: currentMonths / 12
+        });
+
         currentMonths += 12;
     }
 
