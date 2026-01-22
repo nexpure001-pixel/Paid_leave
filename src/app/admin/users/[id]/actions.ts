@@ -39,9 +39,21 @@ export async function consumeLeave(formData: FormData) {
     const userId = formData.get("userId") as string;
     const date = formData.get("date") as string;
     const reason = formData.get("reason") as string;
+    const consumptionType = formData.get("consumptionType") as string;
+    const hours = formData.get("hours") as string;
 
     if (!userId || !date) {
         return { error: "Invalid form data" };
+    }
+
+    // Calculate Amount
+    let amount = 1.0;
+    if (consumptionType === 'half') {
+        amount = 0.5;
+    } else if (consumptionType === 'time') {
+        const h = parseInt(hours || "1");
+        // Assumption: 8 hours = 1 day. 1 hour = 0.125
+        amount = h / 8.0;
     }
 
     const supabase = createAdminClient();
@@ -53,7 +65,8 @@ export async function consumeLeave(formData: FormData) {
             user_id: userId,
             date_requested: date,
             reason: reason,
-            status: 'pending' // function expects pending
+            amount_days: amount, // Logic update
+            status: 'pending'
         })
         .select()
         .single();

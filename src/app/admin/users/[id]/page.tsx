@@ -63,7 +63,10 @@ export default async function UserDetailPage(props: { params: Promise<{ id: stri
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="text-sm text-gray-500">現在利用可能な有給</p>
-                                <p className="text-4xl font-bold text-gray-900">{totalRemaining} <span className="text-lg font-normal">日</span></p>
+                                <p className="text-4xl font-bold text-gray-900">
+                                    {Number(totalRemaining).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
+                                    <span className="text-lg font-normal ml-1">日</span>
+                                </p>
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-gray-500">入社日</p>
@@ -103,9 +106,15 @@ export default async function UserDetailPage(props: { params: Promise<{ id: stri
                                                 <td className="px-4 py-3 text-sm text-red-600 font-medium">
                                                     {grant.expiry_date}
                                                 </td>
-                                                <td className="px-4 py-3 text-sm text-gray-900">{grant.days_granted}</td>
-                                                <td className="px-4 py-3 text-sm text-gray-500">{grant.days_used}</td>
-                                                <td className="px-4 py-3 text-sm font-bold text-blue-600">{remaining}</td>
+                                                <td className="px-4 py-3 text-sm text-gray-900">
+                                                    {Number(grant.days_granted).toLocaleString(undefined, { maximumFractionDigits: 3 })}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm text-gray-500">
+                                                    {Number(grant.days_used).toLocaleString(undefined, { maximumFractionDigits: 3 })}
+                                                </td>
+                                                <td className="px-4 py-3 text-sm font-bold text-blue-600">
+                                                    {Number(remaining).toLocaleString(undefined, { maximumFractionDigits: 3 })}
+                                                </td>
                                                 <td className="px-4 py-3 text-sm">
                                                     {isExpired ? (
                                                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">

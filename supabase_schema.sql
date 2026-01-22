@@ -19,8 +19,8 @@ alter table public.users enable row level security;
 create table public.leave_grants (
   id uuid default uuid_generate_v4() primary key,
   user_id uuid references public.users(id) on delete cascade not null,
-  days_granted numeric(5, 1) not null check (days_granted > 0),
-  days_used numeric(5, 1) not null default 0 check (days_used >= 0),
+  days_granted numeric(5, 3) not null check (days_granted > 0),
+  days_used numeric(5, 3) not null default 0 check (days_used >= 0),
   valid_from date not null,
   expiry_date date not null,
   reason text,
@@ -41,6 +41,7 @@ create table public.leave_requests (
   user_id uuid references public.users(id) on delete cascade not null,
   date_requested date not null,
   status text check (status in ('pending', 'approved', 'rejected')) default 'pending',
+  amount_days numeric(5, 3) not null default 1.0, -- 1.0 = Full Day, 0.5 = Half, 0.125 = 1 Hour
   reason text,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -53,7 +54,7 @@ create table public.leave_consumptions (
   id uuid default uuid_generate_v4() primary key,
   request_id uuid references public.leave_requests(id) on delete cascade not null,
   grant_id uuid references public.leave_grants(id) on delete cascade not null,
-  days_consumed numeric(5, 1) not null check (days_consumed > 0),
+  days_consumed numeric(5, 3) not null check (days_consumed > 0),
   created_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -98,11 +99,8 @@ begin
     raise exception 'Request is not pending';
   end if;
 
-  -- Since this is a daily system, we assume 1 request = 1 day (or define unit elsewhere).
-  -- For now, let's assume 1 day per request row for simplicity, or we can add `days_requested` column to `leave_requests`.
-  -- Let's update `leave_requests` to allow variable days if needed, but per requirements "date_requested" implies specific dates.
-  -- Assumption: 1 record = 1 day off.
-  days_needed := 1.0; 
+  -- Use the amount requested (default 1.0, or 0.5, 0.125 etc)
+  days_needed := req_record.amount_days;
 
   -- Check global Remaining
   if calculate_remaining_leave(req_record.user_id) < days_needed then
