@@ -48,11 +48,11 @@ export function ConsumeLeaveForm({ userId }: { userId: string }) {
                 </div>
 
                 <div className="border-t border-gray-100 pt-4">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 mb-2">
                         消化種別 (Type)
                     </label>
                     <div className="flex space-x-4 mb-4">
-                        <label className="flex items-center space-x-2 cursor-pointer">
+                        <label className="flex items-center space-x-2 cursor-pointer text-gray-900">
                             <input
                                 type="radio"
                                 name="consumptionType"
@@ -63,7 +63,7 @@ export function ConsumeLeaveForm({ userId }: { userId: string }) {
                             />
                             <span>1日 (全休)</span>
                         </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
+                        <label className="flex items-center space-x-2 cursor-pointer text-gray-900">
                             <input
                                 type="radio"
                                 name="consumptionType"
@@ -74,7 +74,7 @@ export function ConsumeLeaveForm({ userId }: { userId: string }) {
                             />
                             <span>半日 (0.5日)</span>
                         </label>
-                        <label className="flex items-center space-x-2 cursor-pointer">
+                        <label className="flex items-center space-x-2 cursor-pointer text-gray-900">
                             <input
                                 type="radio"
                                 name="consumptionType"
@@ -89,12 +89,12 @@ export function ConsumeLeaveForm({ userId }: { userId: string }) {
 
                     {consumptionType === 'time' && (
                         <div className="bg-orange-50 p-4 rounded-md mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-900 mb-1">
                                 消化時間 (1日8時間換算)
                             </label>
                             <select
                                 name="hours"
-                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-white p-2"
+                                className="block w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500 bg-white text-gray-900 p-2"
                             >
                                 <option value="1">1時間 (0.125日)</option>
                                 <option value="2">2時間 (0.250日)</option>
